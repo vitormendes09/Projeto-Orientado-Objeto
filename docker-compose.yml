@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Serviço da aplicação Spring Boot
+  barbearia-api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: barbearia-api
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
+      # Para H2 em modo arquivo, precisa de volume persistente
+      - DATABASE_URL=jdbc:h2:file:/data/barbearia-db;DB_CLOSE_DELAY=-1
+    volumes:
+      # Volume para persistir o arquivo H2
+      - h2-data:/data
+      # Volume para logs (opcional)
+      - ./logs:/app/logs
+    networks:
+      - barbearia-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+
+  # Adminer - Interface para visualizar o H2 (opcional, mas útil)
+  adminer:
+    image: adminer:latest
+    container_name: barbearia-adminer
+    ports:
+      - "8081:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=barbearia-api
+      - ADMINER_DRIVER=server
+    networks:
+      - barbearia-network
+    depends_on:
+      - barbearia-api
+    restart: unless-stopped
+
+networks:
+  barbearia-network:
+    driver: bridge
+
+volumes:
+  h2-data:
+    driver: local

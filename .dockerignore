@@ -1,0 +1,22 @@
+# .dockerignore
+target/
+*.log
+*.jar
+!mvnw
+!mvnw.cmd
+!.mvn
+*.md
+.git
+.gitignore
+.gitattributes
+.settings/
+.classpath
+.project
+*.iml
+.idea/
+*.iws
+*.ipr
+.DS_Store
+test-output/
+logs/
+data/  # Ignora dados locais do H2
