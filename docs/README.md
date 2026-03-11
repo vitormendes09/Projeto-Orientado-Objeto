@@ -9,7 +9,7 @@
 
 API RESTful para gerenciamento de barbearia, desenvolvida com Spring Boot, seguindo boas práticas de desenvolvimento, arquitetura limpa e deploy containerizado.
 
-## 🚀 Principais Características
+## Principais Características
 
 - **API RESTful** com endpoints bem definidos
 - **Containerização** com Docker para ambientes consistentes
@@ -17,7 +17,7 @@ API RESTful para gerenciamento de barbearia, desenvolvida com Spring Boot, segui
 - **Documentação completa** para fácil manutenção
 - **Pronto para testes** com estrutura preparada
 
-## 📚 Índice da Documentação
+## Índice da Documentação
 
 | Arquivo | Descrição |
 |---------|-----------|
@@ -33,7 +33,7 @@ API RESTful para gerenciamento de barbearia, desenvolvida com Spring Boot, segui
 | [10-monitoramento.md](./10-monitoramento.md) | Health checks e métricas |
 | [11-troubleshooting.md](./11-troubleshooting.md) | Problemas comuns e soluções |
 
-## 🎯 Objetivos da Documentação
+## Objetivos da Documentação
 
 Esta documentação visa:
 
@@ -43,7 +43,7 @@ Esta documentação visa:
 4. **Fornecer guias práticos** para desenvolvimento e deploy
 5. **Estabelecer padrões** para futuras contribuições
 
-## 🛠️ Primeiros Passos
+## Primeiros Passos
 
 ```bash
 # Clone o repositório
@@ -54,3 +54,23 @@ git clone [https://github.com/vitormendes09/Projeto-Orientado-Objeto]
 
 # Ou acesse via PowerShell
 .\docker-build.ps1 dev
+
+```
+
+# Acesse a aplicação: 
+http://localhost:8080
+
+# Ver logs
+docker-compose logs -f barbearia-api
+
+# Parar serviços
+docker-compose down
+
+# Parar e remover volumes (limpa dados)
+docker-compose down -v
+
+# Executar comando no container
+docker exec -it barbearia-api sh
+
+# Ver status
+docker-compose ps
