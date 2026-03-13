@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Serviço da aplicação Spring Boot
   barbearia-api:
@@ -11,17 +9,15 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
-      # Para H2 em modo arquivo, precisa de volume persistente
-      - DATABASE_URL=jdbc:h2:file:/data/barbearia-db;DB_CLOSE_DELAY=-1
     volumes:
       # Volume para persistir o arquivo H2
-      - h2-data:/data
+      - h2-data:/app/data
       # Volume para logs (opcional)
       - ./logs:/app/logs
     networks:
       - barbearia-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5

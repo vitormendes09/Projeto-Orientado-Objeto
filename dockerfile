@@ -22,8 +22,13 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Cria um usuário não-root para segurança
-RUN addgroup -S spring && adduser -S spring -G spring
+# Cria o diretório de dados e ajusta permissões ANTES de criar o usuário
+RUN mkdir -p /app/data && \
+    addgroup -S spring && \
+    adduser -S spring -G spring && \
+    chown -R spring:spring /app
+
+# Muda para usuário não-root
 USER spring:spring
 
 # Copia o JAR do estágio builder
