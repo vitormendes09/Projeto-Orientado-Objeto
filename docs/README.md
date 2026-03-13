@@ -15,23 +15,20 @@ API RESTful para gerenciamento de barbearia, desenvolvida com Spring Boot, segui
 - **Containerização** com Docker para ambientes consistentes
 - **Perfis de ambiente** (dev/prod) para diferentes configurações
 - **Documentação completa** para fácil manutenção
+- **Factory Visitor Prototype** como padrões de projeto
 - **Pronto para testes** com estrutura preparada
 
 ## Índice da Documentação
 
 | Arquivo | Descrição |
 |---------|-----------|
-| [01-visao-geral.md](./01-visao-geral.md) | Visão geral da arquitetura e fluxos |
+| [01-visao-geral.md](./01-visao-geral.md) | Visão geral, Regras de Negócios e Fluxos |
 | [02-tecnologias.md](./02-tecnologias.md) | Stack tecnológica detalhada |
 | [03-configuracao.md](./03-configuracao.md) | Configurações do projeto |
-| [04-docker.md](./04-docker.md) | Estrutura Docker e containerização |
-| [05-estrutura-projeto.md](./05-estrutura-projeto.md) | Organização do código fonte |
-| [06-banco-dados.md](./06-banco-dados.md) | Configuração do H2 Database |
-| [07-ambiente-desenvolvimento.md](./07-ambiente-desenvolvimento.md) | Setup e execução local |
-| [08-ambiente-producao.md](./08-ambiente-producao.md) | Deploy em produção |
+| [04-estrutura-projeto.md](./04-estrutura-projeto.md) | Organização do código fonte |
+| [05-estrutura-projeto.md](./05-estrutura-projeto.md) | Testes manuais utilizando curl |
 | [09-testes.md](./09-testes.md) | Estratégias e tipos de testes |
-| [10-monitoramento.md](./10-monitoramento.md) | Health checks e métricas |
-| [11-troubleshooting.md](./11-troubleshooting.md) | Problemas comuns e soluções |
+
 
 ## Objetivos da Documentação
 
@@ -50,10 +47,10 @@ Esta documentação visa:
 git clone [https://github.com/vitormendes09/Projeto-Orientado-Objeto]
 
 # Execute com Docker (recomendado)
-./docker-build.sh dev
+./scripts/docker-build.sh dev
 
 # Ou acesse via PowerShell
-.\docker-build.ps1 dev
+./scripts/docker-build.ps1 dev
 
 ```
 

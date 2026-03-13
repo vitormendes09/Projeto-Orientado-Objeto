@@ -1,6 +1,6 @@
 # Configuração do Projeto
 
-## 📁 Estrutura de Configuração
+## Estrutura de Configuração
 
 barbearia/
 ├── pom.xml # Dependências e build
