@@ -26,7 +26,7 @@ API RESTful para gerenciamento de barbearia, desenvolvida com Spring Boot, segui
 | [02-tecnologias.md](./02-tecnologias.md) | Stack tecnológica detalhada |
 | [03-configuracao.md](./03-configuracao.md) | Configurações do projeto |
 | [04-estrutura-projeto.md](./04-estrutura-projeto.md) | Organização do código fonte |
-| [05-estrutura-projeto.md](./05-estrutura-projeto.md) | Testes manuais utilizando curl |
+| [05-testes-manuais.md](05-testes-manuais.md) | Testes manuais utilizando curl |
 | [09-testes.md](./09-testes.md) | Estratégias e tipos de testes |
 
 
