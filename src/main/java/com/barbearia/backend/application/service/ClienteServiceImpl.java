@@ -1,12 +1,12 @@
-package com.barbearia.backend.application;
+package com.barbearia.backend.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.barbearia.backend.core.dtos.ClienteRequestDTO;
-import com.barbearia.backend.core.dtos.ClienteResponseDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteRequestDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteResponseDTO;
 import com.barbearia.backend.core.entities.Cliente;
 import com.barbearia.backend.core.exception.BusinessException;
 import com.barbearia.backend.core.exception.ResourceNotFoundException;

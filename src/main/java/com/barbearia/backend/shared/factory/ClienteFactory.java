@@ -3,7 +3,7 @@ package com.barbearia.backend.shared.factory;
 
 import org.springframework.stereotype.Component;
 
-import com.barbearia.backend.core.dtos.ClienteRequestDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteRequestDTO;
 import com.barbearia.backend.core.entities.Cliente;
 
 /**
