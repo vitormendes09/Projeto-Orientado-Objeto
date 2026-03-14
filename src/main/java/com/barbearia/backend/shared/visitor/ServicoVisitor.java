@@ -1,7 +1,9 @@
 package com.barbearia.backend.shared.visitor;
 
-import com.barbearia.backend.core.entities.Servico;
+
 import java.util.List;
+
+import com.barbearia.backend.core.entities.Servico;
 
 /**
  * PADRÃO VISITOR (INTERFACE)
