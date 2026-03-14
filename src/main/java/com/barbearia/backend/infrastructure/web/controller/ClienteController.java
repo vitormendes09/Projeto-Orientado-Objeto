@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.barbearia.backend.core.dtos.ClienteRequestDTO;
-import com.barbearia.backend.core.dtos.ClienteResponseDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteRequestDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteResponseDTO;
 import com.barbearia.backend.core.ports.incoming.ClienteService;
 
 import java.util.List;

@@ -3,8 +3,8 @@ package com.barbearia.backend.core.ports.incoming;
 
 import java.util.List;
 
-import com.barbearia.backend.core.dtos.ClienteRequestDTO;
-import com.barbearia.backend.core.dtos.ClienteResponseDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteRequestDTO;
+import com.barbearia.backend.core.dtos.clintes.ClienteResponseDTO;
 
 /**
  * PORTA DE ENTRADA (INCOMING PORT)

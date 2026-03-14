@@ -1,4 +1,4 @@
-package com.barbearia.backend.core.dtos;
+package com.barbearia.backend.core.dtos.clintes;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
