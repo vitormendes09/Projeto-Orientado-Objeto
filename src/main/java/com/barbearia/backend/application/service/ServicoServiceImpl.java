@@ -35,24 +35,24 @@ public class ServicoServiceImpl implements ServiceService {
     @Override
     @Transactional
     public ServiceResponseDTO criar(ServiceRequestDTO request) {
-        log.info("✂️ Criando novo serviço: {}", request.getNome());
+        log.info("Criando novo serviço: {}", request.getNome());
         
         validarNomeUnico(request.getNome(), null);
         
-        // 🏭 Agora retorna Servico (nossa entidade)
+        //  Agora retorna Servico (nossa entidade)
         Servico servico = factory.criarServico(request);
         
         Servico saved = repository.save(servico);
         
         logVisitor.visit(saved);
         
-        log.info("✅ Serviço criado com sucesso! ID: {}", saved.getId());
+        log.info(" Serviço criado com sucesso! ID: {}", saved.getId());
         return toResponseDTO(saved);
     }
 
     @Override
     public ServiceResponseDTO buscarPorId(Long id) {
-        log.debug("🔍 Buscando serviço por ID: {}", id);
+        log.debug(" Buscando serviço por ID: {}", id);
         
         Servico servico = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado com ID: " + id));
@@ -62,7 +62,7 @@ public class ServicoServiceImpl implements ServiceService {
 
     @Override
     public ServiceResponseDTO buscarPorNome(String nome) {
-        log.debug("🔍 Buscando serviço por nome: {}", nome);
+        log.debug(" Buscando serviço por nome: {}", nome);
         
         Servico servico = repository.findByNome(nome)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado com nome: " + nome));
@@ -72,12 +72,12 @@ public class ServicoServiceImpl implements ServiceService {
 
     @Override
     public List<ServiceResponseDTO> listarTodos() {
-        log.debug("📋 Listando todos os serviços (incluindo inativos)");
+        log.debug(" Listando todos os serviços (incluindo inativos)");
         
         List<Servico> servicos = repository.findAll();
         
         var estatisticas = estatisticaVisitor.visitAll(servicos);
-        log.info("📊 Estatísticas: {}", estatisticas);
+        log.info("Estatísticas: {}", estatisticas);
         
         return servicos.stream()
                 .map(this::toResponseDTO)
@@ -86,7 +86,7 @@ public class ServicoServiceImpl implements ServiceService {
 
     @Override
     public List<ServiceResponseDTO> listarAtivos() {
-        log.debug("📋 Listando apenas serviços ativos (para clientes)");
+        log.debug("Listando apenas serviços ativos (para clientes)");
         
         List<Servico> servicos = repository.findAllAtivos();
         
@@ -98,7 +98,7 @@ public class ServicoServiceImpl implements ServiceService {
     @Override
     @Transactional
     public ServiceResponseDTO atualizar(Long id, ServiceRequestDTO request) {
-        log.info("✏️ Atualizando serviço ID: {}", id);
+        log.info(" Atualizando serviço ID: {}", id);
         
         Servico servico = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado com ID: " + id));
@@ -114,33 +114,33 @@ public class ServicoServiceImpl implements ServiceService {
         updated = repository.save(updated);
         
         if (!backup.getPreco().equals(updated.getPreco())) {
-            log.debug("💰 Preço alterado de R$ {} para R$ {}", 
+            log.debug(" Preço alterado de R$ {} para R$ {}", 
                 backup.getPreco(), updated.getPreco());
         }
         
-        log.info("✅ Serviço atualizado com sucesso!");
+        log.info("Serviço atualizado com sucesso!");
         return toResponseDTO(updated);
     }
 
     @Override
     @Transactional
     public void deletar(Long id) {
-        log.warn("🗑️ Deletando serviço ID: {} (HARD DELETE)", id);
+        log.warn(" Deletando serviço ID: {} (HARD DELETE)", id);
         
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Serviço não encontrado com ID: " + id);
         }
         
-        log.warn("⚠️ Verificar se existem agendamentos futuros antes de deletar!");
+        log.warn("Verificar se existem agendamentos futuros antes de deletar!");
         
         repository.deleteById(id);
-        log.info("✅ Serviço deletado permanentemente");
+        log.info(" Serviço deletado permanentemente");
     }
 
     @Override
     @Transactional
     public void desativar(Long id) {
-        log.info("🔴 Desativando serviço ID: {} (soft delete)", id);
+        log.info(" Desativando serviço ID: {} (soft delete)", id);
         
         Servico servico = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado com ID: " + id));
@@ -148,13 +148,13 @@ public class ServicoServiceImpl implements ServiceService {
         servico.desativar();
         repository.save(servico);
         
-        log.info("✅ Serviço desativado com sucesso");
+        log.info("Serviço desativado com sucesso");
     }
 
     @Override
     @Transactional
     public void reativar(Long id) {
-        log.info("🟢 Reativando serviço ID: {}", id);
+        log.info("Reativando serviço ID: {}", id);
         
         Servico servico = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado com ID: " + id));
@@ -162,7 +162,7 @@ public class ServicoServiceImpl implements ServiceService {
         servico.reativar();
         repository.save(servico);
         
-        log.info("✅ Serviço reativado com sucesso");
+        log.info("Serviço reativado com sucesso");
     }
 
     private void validarNomeUnico(String nome, Long idIgnorar) {
