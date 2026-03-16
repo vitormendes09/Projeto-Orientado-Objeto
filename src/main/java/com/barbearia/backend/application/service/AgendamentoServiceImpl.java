@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.barbearia.backend.core.dtos.agenda.AgendaResponseDTO;
 import com.barbearia.backend.core.dtos.agendamento.AgendamentoRequestDTO;
 import com.barbearia.backend.core.dtos.agendamento.AgendamentoResponseDTO;
 import com.barbearia.backend.core.dtos.agendamento.DisponibilidadeResponseDTO;
 import com.barbearia.backend.core.entities.*;
 import com.barbearia.backend.core.exception.BusinessException;
 import com.barbearia.backend.core.exception.ResourceNotFoundException;
+import com.barbearia.backend.core.ports.incoming.AgendaService;
 import com.barbearia.backend.core.ports.incoming.AgendamentoService;
 import com.barbearia.backend.core.ports.outgoing.*;
 import com.barbearia.backend.shared.factory.AgendamentoFactory;
@@ -34,7 +37,7 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     private final ClienteRepository clienteRepository;
     private final ServicoRepository servicoRepository;
     private final AgendaRepository agendaRepository;
-
+    private final AgendaService agendaService;
     private final AgendamentoFactory factory;
     private final AgendamentoPrototype prototype;
     private final AgendamentoLogVisitor logVisitor;
@@ -44,11 +47,11 @@ public class AgendamentoServiceImpl implements AgendamentoService {
     @Transactional
     public AgendamentoResponseDTO criar(AgendamentoRequestDTO request) {
         log.info("Criando novo agendamento para cliente ID: {}", request.getClienteId());
-        
+
         // 1. Buscar cliente
         Cliente cliente = clienteRepository.findById(request.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
-        
+
         // 2. Buscar serviços
         List<Servico> servicos = new ArrayList<>();
         for (Long servicoId : request.getServicosIds()) {
@@ -60,45 +63,46 @@ public class AgendamentoServiceImpl implements AgendamentoService {
         if (servicos.isEmpty()) {
             throw new BusinessException("Nenhum serviço válido encontrado");
         }
-        
-        // 3. Validar serviços ativos (RN05 - Serviços inativos não aparecem para clientes)
+
+        // 3. Validar serviços ativos (RN05 - Serviços inativos não aparecem para
+        // clientes)
         boolean hasInativo = servicos.stream().anyMatch(s -> !s.getAtivo());
         if (hasInativo) {
             throw new BusinessException("Não é possível agendar serviços inativos");
         }
-        
+
         // 4. Calcular duração total (RN02.2)
         int duracaoTotal = servicos.stream()
                 .mapToInt(Servico::getDuracaoMinutos)
                 .sum();
-        
+
         LocalDateTime dataHoraFim = request.getDataHoraInicio().plusMinutes(duracaoTotal);
-        
+
         // 5. Validar dentro do horário de funcionamento (RN01)
         validarHorarioFuncionamento(request.getDataHoraInicio(), dataHoraFim);
-        
+
         // 6. Validar conflitos (RN03)
         validarConflitos(request.getDataHoraInicio(), dataHoraFim, null);
-        
+
         // 7. Criar agendamento usando Factory
-        Agendamento agendamento = factory.criarAgendamento(cliente, servicos, 
+        Agendamento agendamento = factory.criarAgendamento(cliente, servicos,
                 request.getDataHoraInicio(), dataHoraFim, request.getObservacoes());
-        
+
         // 8. Registrar agendamento no cliente (atualiza último agendamento)
         cliente.registrarAgendamento();
-        
+
         // 9. Incrementar contador nos serviços
         servicos.forEach(Servico::registrarAgendamento);
-        
+
         // 10. Salvar
         Agendamento saved = agendamentoRepository.save(agendamento);
-        
+
         // 11. Log via Visitor
         logVisitor.visit(saved);
-        
-        log.info("Agendamento criado com sucesso! ID: {}, Horário: {} - {}", 
+
+        log.info("Agendamento criado com sucesso! ID: {}, Horário: {} - {}",
                 saved.getId(), saved.getDataHoraInicio(), saved.getDataHoraFim());
-        
+
         return toResponseDTO(saved);
     }
 
@@ -273,20 +277,29 @@ public class AgendamentoServiceImpl implements AgendamentoService {
      * RN01 - Validar se horário está dentro do expediente
      */
     private void validarHorarioFuncionamento(LocalDateTime inicio, LocalDateTime fim) {
-        int diaSemana = inicio.getDayOfWeek().getValue();
+        int diaSemana = inicio.getDayOfWeek().getValue(); // 1=Segunda, 7=Domingo
+        LocalTime horaInicio = inicio.toLocalTime();
+        int duracaoMinutos = (int) java.time.Duration.between(inicio, fim).toMinutes();
 
-        List<Agenda> agendas = agendaRepository.findByDiaSemana(diaSemana);
-
-        if (agendas.isEmpty()) {
-            throw new BusinessException("Barbearia não abre neste dia da semana");
-        }
-
-        boolean horarioValido = agendas.stream()
-                .anyMatch(agenda -> !inicio.toLocalTime().isBefore(agenda.getHoraInicio()) &&
-                        !fim.toLocalTime().isAfter(agenda.getHoraFim()));
+        boolean horarioValido = agendaService.isHorarioValido(diaSemana, horaInicio, duracaoMinutos);
 
         if (!horarioValido) {
-            throw new BusinessException("Horário fora do expediente da barbearia");
+            // Buscar agendas para mostrar horários disponíveis
+            List<AgendaResponseDTO> agendas = agendaService.listarPorDiaSemana(diaSemana);
+
+            if (agendas.isEmpty()) {
+                throw new BusinessException("Barbearia não abre neste dia da semana");
+            } else {
+                String horariosDisponiveis = agendas.stream()
+                        .filter(AgendaResponseDTO::getAtivo)
+                        .map(a -> String.format("%s - %s", a.getHoraInicio(), a.getHoraFim()))
+                        .collect(java.util.stream.Collectors.joining(", "));
+
+                throw new BusinessException(String.format(
+                        "Horário fora do expediente. Horários disponíveis para %s: %s",
+                        agendas.get(0).getNomeDiaSemana(),
+                        horariosDisponiveis));
+            }
         }
     }
 

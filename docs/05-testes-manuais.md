@@ -89,9 +89,9 @@ curl -X PATCH http://localhost:8080/api/servicos/2/desativar
 curl -X PATCH http://localhost:8080/api/servicos/2/reativar
 ```
 
-## Agendamentos
+## Agenda 
 
-### Configurar agenda (horário de funcionamento)
+### Criar agenda 
 
 ```bash
 curl -X POST http://localhost:8080/api/agendas \
@@ -102,13 +102,32 @@ curl -X POST http://localhost:8080/api/agendas \
     "horaFim": "18:00",
     "ativo": true
   }'
-  ```
-
-### Verificar disponibilidade para um serviço
-
-``` bash
-curl "http://localhost:8080/api/agendamentos/disponibilidade?data=2025-04-10&servicoId=1"
 ```
+
+### Listar Agendas
+
+```bash
+curl http://localhost:8080/api/agendas
+```
+
+## Listar por dia 
+```bash 
+curl http://localhost:8080/api/agendas/dia/2
+```
+
+## Atualizar Agenda
+```bash 
+curl -X PUT http://localhost:8080/api/agendas/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "diaSemana": 2,
+    "horaInicio": "08:00",
+    "horaFim": "19:00",
+    "ativo": true
+  }'
+```
+
+## Agendamentos
 
 ### Verificar disponibilidade da semana
 
