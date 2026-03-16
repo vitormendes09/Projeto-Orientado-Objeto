@@ -44,7 +44,7 @@ Esta documentação visa:
 
 ```bash
 # Clone o repositório
-git clone [https://github.com/vitormendes09/Projeto-Orientado-Objeto]
+git clone https://github.com/vitormendes09/Projeto-Orientado-Objeto
 
 # Execute com Docker (recomendado)
 ./scripts/docker-build.sh dev
