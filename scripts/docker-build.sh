@@ -12,7 +12,7 @@ elif [ "$1" == "prod" ]; then
     echo " Modo produção"
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 else
-    echo "🔧 Modo padrão"
+    echo "Modo padrão"
     docker-compose up --build
 fi
 
