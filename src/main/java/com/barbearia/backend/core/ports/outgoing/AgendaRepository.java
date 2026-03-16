@@ -9,6 +9,8 @@ public interface AgendaRepository {
     Optional<Agenda> findById(Long id);
     List<Agenda> findAll();
     List<Agenda> findByDiaSemana(Integer diaSemana);
+    List<Agenda> findByBarbeiroId(Long barbeiroId);
+    List<Agenda> findByBarbeiroIdAndDiaSemana(Long barbeiroId, Integer diaSemana); 
     void deleteById(Long id);
     boolean existsById(Long id);
 }

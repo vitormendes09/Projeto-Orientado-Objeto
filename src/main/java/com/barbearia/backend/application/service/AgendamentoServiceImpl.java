@@ -64,40 +64,51 @@ public class AgendamentoServiceImpl implements AgendamentoService {
             throw new BusinessException("Nenhum serviço válido encontrado");
         }
 
-        // 3. Validar serviços ativos (RN05 - Serviços inativos não aparecem para
-        // clientes)
+        // 3. Validar serviços ativos
         boolean hasInativo = servicos.stream().anyMatch(s -> !s.getAtivo());
         if (hasInativo) {
             throw new BusinessException("Não é possível agendar serviços inativos");
         }
 
-        // 4. Calcular duração total (RN02.2)
+        // 4. Pegar o barbeiro do primeiro serviço (todos devem ser do mesmo barbeiro)
+        Barbeiro barbeiro = servicos.get(0).getBarbeiro();
+        boolean mesmoBarbeiro = servicos.stream()
+                .allMatch(s -> s.getBarbeiro().getId().equals(barbeiro.getId()));
+
+        if (!mesmoBarbeiro) {
+            throw new BusinessException("Todos os serviços devem ser do mesmo barbeiro");
+        }
+
+        // 5. Calcular duração total
         int duracaoTotal = servicos.stream()
                 .mapToInt(Servico::getDuracaoMinutos)
                 .sum();
 
         LocalDateTime dataHoraFim = request.getDataHoraInicio().plusMinutes(duracaoTotal);
 
-        // 5. Validar dentro do horário de funcionamento (RN01)
+        // 6. Validar dentro do horário de funcionamento
         validarHorarioFuncionamento(request.getDataHoraInicio(), dataHoraFim);
 
-        // 6. Validar conflitos (RN03)
+        // 7. Validar conflitos
         validarConflitos(request.getDataHoraInicio(), dataHoraFim, null);
 
-        // 7. Criar agendamento usando Factory
+        // 8. Criar agendamento usando Factory
         Agendamento agendamento = factory.criarAgendamento(cliente, servicos,
                 request.getDataHoraInicio(), dataHoraFim, request.getObservacoes());
 
-        // 8. Registrar agendamento no cliente (atualiza último agendamento)
+        // 9. IMPORTANTE: Associar o barbeiro
+        agendamento.setBarbeiro(barbeiro);
+
+        // 10. Registrar agendamento no cliente
         cliente.registrarAgendamento();
 
-        // 9. Incrementar contador nos serviços
+        // 11. Incrementar contador nos serviços
         servicos.forEach(Servico::registrarAgendamento);
 
-        // 10. Salvar
+        // 12. Salvar
         Agendamento saved = agendamentoRepository.save(agendamento);
 
-        // 11. Log via Visitor
+        // 13. Log via Visitor
         logVisitor.visit(saved);
 
         log.info("Agendamento criado com sucesso! ID: {}, Horário: {} - {}",

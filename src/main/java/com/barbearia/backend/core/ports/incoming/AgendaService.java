@@ -6,20 +6,12 @@ import com.barbearia.backend.core.dtos.agenda.AgendaResponseDTO;
 import java.time.LocalTime;
 import java.util.List;
 
-/**
- * PORTA DE ENTRADA (INCOMING PORT) para Agenda
- * 
- * Responsabilidade: Definir as operações de negócio disponíveis para gerenciamento de agenda
- * 
- * RF01 – Barbeiro define horário de funcionamento
- * RN01 – Sistema só permite agendamentos dentro deste horário
- */
 public interface AgendaService {
     
     /**
      * RF01.1 – Cadastrar horário de funcionamento para um dia da semana
      */
-    AgendaResponseDTO criar(AgendaRequestDTO request);
+    AgendaResponseDTO criar(Long barbeiroId, AgendaRequestDTO request);
     
     /**
      * Buscar configuração de agenda por ID
@@ -30,6 +22,11 @@ public interface AgendaService {
      * Listar todas as configurações de agenda
      */
     List<AgendaResponseDTO> listarTodos();
+    
+    /**
+     * Listar configurações por barbeiro
+     */
+    List<AgendaResponseDTO> listarPorBarbeiro(Long barbeiroId); // NOVO
     
     /**
      * Listar configurações por dia da semana
@@ -62,7 +59,7 @@ public interface AgendaService {
     void deletar(Long id);
     
     /**
-     * Validar se um horário está dentro do expediente (usado por AgendamentoService)
+     * Validar se um horário está dentro do expediente
      */
     boolean isHorarioValido(Integer diaSemana, LocalTime horaInicio, int duracaoMinutos);
 }

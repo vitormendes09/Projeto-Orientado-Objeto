@@ -16,6 +16,10 @@ public class Agenda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barbeiro_id", nullable = false)
+    private Barbeiro barbeiro;  // NOVO: Agenda pertence a um barbeiro
+
     @Column(name = "dia_semana", nullable = false)
     private Integer diaSemana;
 
@@ -36,10 +40,6 @@ public class Agenda {
         dataCriacao = LocalDateTime.now();
     }
 
-    /**
-     * RN01 - Barbeiro define horário de funcionamento
-     * RN01.1 - Sistema só permite agendamentos dentro deste horário
-     */
     public boolean isHorarioDisponivel(LocalTime horario, int duracaoMinutos) {
         LocalTime horarioFim = horario.plusMinutes(duracaoMinutos);
         return !horario.isBefore(horaInicio) && !horarioFim.isAfter(horaFim);

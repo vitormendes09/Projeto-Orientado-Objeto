@@ -8,14 +8,20 @@ import java.util.List;
 
 @Entity
 @Table(name = "agendamentos")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Agendamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barbeiro_id", nullable = false)
+    private Barbeiro barbeiro;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
@@ -28,11 +34,7 @@ public class Agendamento {
     private LocalDateTime dataHoraFim;
 
     @ManyToMany
-    @JoinTable(
-        name = "agendamento_servicos",
-        joinColumns = @JoinColumn(name = "agendamento_id"),
-        inverseJoinColumns = @JoinColumn(name = "servico_id")
-    )
+    @JoinTable(name = "agendamento_servicos", joinColumns = @JoinColumn(name = "agendamento_id"), inverseJoinColumns = @JoinColumn(name = "servico_id"))
     private List<Servico> servicos = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -67,8 +69,8 @@ public class Agendamento {
      * Verifica se este agendamento conflita com outro
      */
     public boolean conflitaCom(Agendamento outro) {
-        return !(this.dataHoraFim.isBefore(outro.dataHoraInicio) || 
-                 this.dataHoraInicio.isAfter(outro.dataHoraFim));
+        return !(this.dataHoraFim.isBefore(outro.dataHoraInicio) ||
+                this.dataHoraInicio.isAfter(outro.dataHoraFim));
     }
 
     /**

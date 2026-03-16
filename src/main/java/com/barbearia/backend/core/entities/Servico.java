@@ -16,6 +16,10 @@ public class Servico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barbeiro_id", nullable = false)
+    private Barbeiro barbeiro;  // NOVO: Serviço pertence a um barbeiro
+
     @Column(nullable = false, length = 100)
     private String nome;
 

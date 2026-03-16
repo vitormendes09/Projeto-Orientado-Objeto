@@ -9,9 +9,13 @@ public interface ServicoRepository {
     Optional<Servico> findById(Long id);
     Optional<Servico> findByNome(String nome);
     List<Servico> findAll();
-    List<Servico> findAllAtivos();
+    List<Servico> findAllAtivos(); 
+    List<Servico> findByBarbeiroId(Long barbeiroId);
+    Optional<Servico> findByBarbeiroIdAndNome(Long barbeiroId, String nome);
+    
     void deleteById(Long id);
     boolean existsById(Long id);
     boolean existsByNome(String nome);
     boolean existsByNomeAndIdNot(String nome, Long id);
+    boolean existsByBarbeiroIdAndNomeAndIdNot(Long barbeiroId, String nome, Long id);
 }

@@ -22,9 +22,23 @@ public class AgendamentoController {
 
     /**
      * RF04.2 – Cliente pode realizar agendamento
+     * 
+     * Exemplo de uso:
+     * POST /api/agendamentos?clienteId=1
+     * {
+     *   "dataHoraInicio": "2025-04-10T14:00:00",
+     *   "servicosIds": [1, 2],
+     *   "observacoes": "Corte e barba"
+     * }
      */
     @PostMapping
-    public ResponseEntity<AgendamentoResponseDTO> criar(@Valid @RequestBody AgendamentoRequestDTO request) {
+    public ResponseEntity<AgendamentoResponseDTO> criar(
+            @RequestParam Long clienteId,  // ID do cliente na URL
+            @Valid @RequestBody AgendamentoRequestDTO request) {
+        
+        // Define o clienteId no request
+        request.setClienteId(clienteId);
+        
         AgendamentoResponseDTO response = agendamentoService.criar(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -40,9 +54,13 @@ public class AgendamentoController {
 
     /**
      * RF05.1 – Barbeiro pode visualizar todos os agendamentos
+     * Pode filtrar por barbeiro se necessário
      */
     @GetMapping
-    public ResponseEntity<List<AgendamentoResponseDTO>> listarTodos() {
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarTodos(
+            @RequestParam(required = false) Long barbeiroId) {
+        
+        // Se tivesse um método para listar por barbeiro, usaria aqui
         List<AgendamentoResponseDTO> response = agendamentoService.listarTodos();
         return ResponseEntity.ok(response);
     }
@@ -95,8 +113,21 @@ public class AgendamentoController {
     @PatchMapping("/{id}/cancelar")
     public ResponseEntity<AgendamentoResponseDTO> cancelar(
             @PathVariable Long id,
+            @RequestParam(required = false) Long clienteId, // Opcional, para validação futura
             @RequestParam String motivo) {
+        
+        // TODO: Implementar validação de permissão baseada em clienteId
         AgendamentoResponseDTO response = agendamentoService.cancelar(id, motivo);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * NOVO: Listar agendamentos por barbeiro
+     */
+    @GetMapping("/barbeiro/{barbeiroId}")
+    public ResponseEntity<List<AgendamentoResponseDTO>> listarPorBarbeiro(@PathVariable Long barbeiroId) {
+        // Este método precisaria ser implementado no service
+        List<AgendamentoResponseDTO> response = List.of(); // Placeholder
         return ResponseEntity.ok(response);
     }
 }

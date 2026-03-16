@@ -12,30 +12,39 @@ import java.util.List;
 
 @Repository
 public interface JpaAgendamentoRepository extends JpaRepository<Agendamento, Long>, AgendamentoRepository {
-    
-    List<Agendamento> findByClienteId(Long clienteId);
-    
-    @Query("SELECT a FROM Agendamento a WHERE a.dataHoraInicio >= :inicio AND a.dataHoraFim <= :fim")
-    List<Agendamento> findByPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
-    
-    List<Agendamento> findByStatus(StatusAgendamento status);
-    
-    @Query("SELECT a FROM Agendamento a WHERE " +
-           "a.status != 'CANCELADO' AND " +
-           "((a.dataHoraInicio < :fim AND a.dataHoraFim > :inicio))")
-    List<Agendamento> findConflitantes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
-    
-    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Agendamento a WHERE " +
-           "a.status != 'CANCELADO' AND " +
-           "((a.dataHoraInicio < :fim AND a.dataHoraFim > :inicio)) AND " +
-           "(:ignorarId IS NULL OR a.id != :ignorarId)")
-    boolean existsConflitante(@Param("inicio") LocalDateTime inicio, 
-                              @Param("fim") LocalDateTime fim,
-                              @Param("ignorarId") Long ignorarId);
-    
-    @Query("SELECT a FROM Agendamento a WHERE " +
-           "DATE(a.dataHoraInicio) = DATE(:data) AND " +
-           "a.status != 'CANCELADO' " +
-           "ORDER BY a.dataHoraInicio")
-    List<Agendamento> findByData(@Param("data") LocalDateTime data);
+
+       List<Agendamento> findByBarbeiroId(Long barbeiroId);
+
+       List<Agendamento> findByClienteId(Long clienteId);
+
+       @Query("SELECT a FROM Agendamento a WHERE a.dataHoraInicio >= :inicio AND a.dataHoraFim <= :fim")
+       List<Agendamento> findByPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+       List<Agendamento> findByStatus(StatusAgendamento status);
+
+       @Query("SELECT a FROM Agendamento a WHERE a.barbeiro.id = :barbeiroId " +
+                     "AND a.dataHoraInicio >= :inicio AND a.dataHoraFim <= :fim")
+       List<Agendamento> findByBarbeiroIdAndPeriodo(@Param("barbeiroId") Long barbeiroId,
+                     @Param("inicio") LocalDateTime inicio,
+                     @Param("fim") LocalDateTime fim);
+                     
+
+       @Query("SELECT a FROM Agendamento a WHERE " +
+                     "a.status != 'CANCELADO' AND " +
+                     "((a.dataHoraInicio < :fim AND a.dataHoraFim > :inicio))")
+       List<Agendamento> findConflitantes(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
+
+       @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Agendamento a WHERE " +
+                     "a.status != 'CANCELADO' AND " +
+                     "((a.dataHoraInicio < :fim AND a.dataHoraFim > :inicio)) AND " +
+                     "(:ignorarId IS NULL OR a.id != :ignorarId)")
+       boolean existsConflitante(@Param("inicio") LocalDateTime inicio,
+                     @Param("fim") LocalDateTime fim,
+                     @Param("ignorarId") Long ignorarId);
+
+       @Query("SELECT a FROM Agendamento a WHERE " +
+                     "DATE(a.dataHoraInicio) = DATE(:data) AND " +
+                     "a.status != 'CANCELADO' " +
+                     "ORDER BY a.dataHoraInicio")
+       List<Agendamento> findByData(@Param("data") LocalDateTime data);
 }
