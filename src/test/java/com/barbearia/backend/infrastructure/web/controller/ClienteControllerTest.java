@@ -4,21 +4,25 @@ import com.barbearia.backend.core.dtos.clintes.ClienteRequestDTO;
 import com.barbearia.backend.core.dtos.clintes.ClienteResponseDTO;
 import com.barbearia.backend.core.ports.incoming.ClienteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import iff.edu.br.barbearia.BarbeariaApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ClienteController.class)  
+@WebMvcTest(ClienteController.class)
+@ContextConfiguration(classes = BarbeariaApplication.class)  // <-- ESSENCIAL!
 class ClienteControllerTest {
 
     @Autowired
@@ -27,8 +31,8 @@ class ClienteControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean  
-    private ClienteService clienteService; 
+    @MockBean
+    private ClienteService clienteService;
 
     @Test
     void deveCriarClienteComSucesso() throws Exception {
