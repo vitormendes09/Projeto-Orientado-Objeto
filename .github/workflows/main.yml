@@ -1,0 +1,124 @@
+name: CI - Testes da Barbearia API
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master", "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup do JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Verificar estrutura do projeto
+        run: |
+          echo "Estrutura de diretórios:"
+          ls -la
+          echo "Verificando src/main:"
+          ls -la src/main/ || echo "src/main não encontrado"
+          echo "Verificando src/test:"
+          ls -la src/test/ || echo "src/test não encontrado"
+          echo "Verificando pom.xml:"
+          cat pom.xml | head -20
+
+      - name: Cache das dependências Maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build da aplicação (sem testes)
+        run: mvn clean compile
+
+      - name: Executar todos os testes
+        run: |
+          echo " Executando testes..."
+          mvn test
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Gerar relatório de cobertura JaCoCo
+        if: always()
+        run: mvn jacoco:report
+
+      - name:  Upload do relatório de testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-testes
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+            target/site/jacoco/
+          retention-days: 7
+
+      - name: Verificar resultados dos testes
+        if: always()
+        run: |
+          echo " Resumo dos testes:"
+          if [ -f target/surefire-reports/TEST-*.xml ]; then
+            echo "Testes executados com sucesso!"
+            grep -r "testsuite" target/surefire-reports/ || echo "Não foi possível extrair estatísticas"
+          else
+            echo "Nenhum relatório de teste encontrado"
+          fi
+
+  docker-build:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup do Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build da imagem Docker (teste)
+        run: |
+          echo " Construindo imagem Docker..."
+          docker build -t barbearia-api:test .
+          
+      - name: Verificar se a imagem foi criada
+        run: |
+          echo " Imagens disponíveis:"
+          docker images | grep barbearia-api
+          
+      - name:  Testar container (opcional)
+        run: |
+          echo " Iniciando container de teste..."
+          docker run -d --name barbearia-test -p 8080:8080 barbearia-api:test
+          sleep 10
+          echo " Logs do container:"
+          docker logs barbearia-test
+          docker stop barbearia-test
+          docker rm barbearia-test
+
+  notify:
+    needs: [build-and-test, docker-build]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notificar resultado
+        run: |
+          if [[ "${{ needs.build-and-test.result }}" == "success" ]]; then
+            echo "Todos os testes passaram com sucesso!"
+          else
+            echo "Alguns testes falharam. Verifique os logs."
+            exit 1
+          fi
