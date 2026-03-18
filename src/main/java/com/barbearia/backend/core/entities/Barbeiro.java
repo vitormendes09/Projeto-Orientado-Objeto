@@ -3,37 +3,35 @@ package com.barbearia.backend.core.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import java.math.BigDecimal;
 
 @Entity
-@Table(name = "servicos")
+@Table(name = "barbeiros")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class Servico {
+public class Barbeiro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "barbeiro_id", nullable = false)
-    private Barbeiro barbeiro;  // NOVO: Serviço pertence a um barbeiro
-
     @Column(nullable = false, length = 100)
     private String nome;
 
+    @Column(nullable = false, unique = true, length = 50)
+    private String email;
+
+    @Column(nullable = false, unique = true, length = 20)
+    private String telefone;
+
+    @Column(nullable = false)
+    private String senha; // Em produção, usar hash (BCrypt)
+
     @Column(length = 500)
-    private String descricao;
+    private String biografia;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal preco;
-
-    @Column(nullable = false)
-    private Integer duracaoMinutos;
-
-    @Column(nullable = false)
-    private Boolean ativo = true;
+    @Column(name = "foto_url")
+    private String fotoUrl;
 
     @Column(name = "data_criacao", nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
@@ -41,8 +39,8 @@ public class Servico {
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
 
-    @Column(name = "total_agendamentos")
-    private Integer totalAgendamentos = 0;
+    @Column(nullable = false)
+    private Boolean ativo = true;
 
     @PrePersist
     protected void onCreate() {
@@ -53,10 +51,6 @@ public class Servico {
     @PreUpdate
     protected void onUpdate() {
         dataAtualizacao = LocalDateTime.now();
-    }
-
-    public void registrarAgendamento() {
-        this.totalAgendamentos++;
     }
 
     public void desativar() {

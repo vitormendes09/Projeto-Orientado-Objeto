@@ -22,7 +22,7 @@ API RESTful para gerenciamento de barbearia, desenvolvida com Spring Boot, segui
 
 | Arquivo | Descrição |
 |---------|-----------|
-| [01-visao-geral.md](./01-visao-geral.md) | Visão geral, Regras de Negócios e Fluxos |
+| [01-visao-geral.md](./01-visao-geral.md) | Visão geral |
 | [02-tecnologias.md](./02-tecnologias.md) | Stack tecnológica detalhada |
 | [03-configuracao.md](./03-configuracao.md) | Configurações do projeto |
 | [04-estrutura-projeto.md](./04-estrutura-projeto.md) | Organização do código fonte |
@@ -44,7 +44,7 @@ Esta documentação visa:
 
 ```bash
 # Clone o repositório
-git clone [https://github.com/vitormendes09/Projeto-Orientado-Objeto]
+git clone https://github.com/vitormendes09/Projeto-Orientado-Objeto
 
 # Execute com Docker (recomendado)
 ./scripts/docker-build.sh dev
